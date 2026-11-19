@@ -347,7 +347,8 @@ html{scrollbar-gutter:stable}
 .workspace>.chart-side .chart-card,.workspace>.chart-side #trend-panel{height:var(--analysis-chart-height)}
 .workspace>.chart-side #trend-detail-panel{height:var(--analysis-chart-height)}
 #trend-detail-tools{margin-top:0}.workspace>.chart-side #trend-panel{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
-.workspace>.chart-side #trend-viewport{box-sizing:border-box;width:100%;max-width:100%;min-width:0}</style>
+.workspace>.chart-side #trend-viewport{box-sizing:border-box;width:100%;max-width:100%;min-width:0}#analysis-scope-title{flex:none;font-size:14px;font-weight:600;margin:0 0 14px;line-height:1.4}
+</style>
 <body>
 <nav class="app-nav" aria-label="SPI SPC">
   <div class="nav-mark" aria-hidden="true">◕</div>
@@ -370,7 +371,7 @@ html{scrollbar-gutter:stable}
 
 
 <main class="workspace"><div class="report-toolbar" role="group" aria-label="分析结果公共控制"><span>分析结果 </span><div class="report-actions"><span>显示单位</span><div class="unit-control"><span id="fixed-unit" hidden></span><select id="unit" aria-label="测量单位"><option value="percent">百分比 (%)</option><option value="physical">实物单位</option></select></div><button type="button" id="export-images" class="outline">导出</button></div></div>
-  <aside class="board-panel" aria-label="板卡列表与测点筛选">
+  <aside class="board-panel" aria-labelledby="analysis-scope-title"><h2 id="analysis-scope-title">分析范围</h2>
 <form class="query-bar" id="query-form" aria-label="查询条件">
   <div class="query-field"><span id="device-label">设备编号</span><details class="query-picker" id="device"><summary aria-labelledby="device-label device-value"><span id="device-value"></span></summary><div class="query-pop"><input type="search" aria-label="搜索设备编号" placeholder="搜索设备编号" autocomplete="off"><div class="query-options"></div></div></details></div>
   <div class="query-field"><span id="model-label">项目名称</span><details class="query-picker" id="model"><summary aria-labelledby="model-label model-value"><span id="model-value"></span></summary><div class="query-pop"><input type="search" aria-label="搜索项目名称" placeholder="搜索项目名称" autocomplete="off"><div class="query-options"></div></div></details></div>
