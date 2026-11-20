@@ -348,7 +348,14 @@ html{scrollbar-gutter:stable}
 .workspace>.chart-side #trend-detail-panel{height:var(--analysis-chart-height)}
 #trend-detail-tools{margin-top:0}.workspace>.chart-side #trend-panel{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
 .workspace>.chart-side #trend-viewport{box-sizing:border-box;width:100%;max-width:100%;min-width:0}#analysis-scope-title{flex:none;font-size:14px;font-weight:600;margin:0 0 14px;line-height:1.4}
-</style>
+#boards>.board-row{display:flex;flex-direction:column;align-items:stretch;gap:5px;padding:7px 6px;min-height:54px;cursor:default}
+#boards .board-select{display:flex;align-items:center;gap:5px;margin:0;min-width:0;cursor:pointer}
+#boards .board-select input{width:auto;flex:none;margin:0}
+#boards .board-select time{margin:0;font-size:11px;color:var(--ink);white-space:nowrap}
+#boards .board-identity{display:flex;align-items:center;gap:5px;min-width:0;padding-left:18px}
+#boards .board-pcb-id{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);user-select:text;font-size:11px}
+#boards .board-copy{flex:none;padding:1px 4px;font-size:10px;color:var(--muted);background:transparent;border-color:transparent}
+#boards .board-copy:hover,#boards .board-copy:focus-visible{color:var(--ink);border-color:var(--line)}</style>
 <body>
 <nav class="app-nav" aria-label="SPI SPC">
   <div class="nav-mark" aria-hidden="true">◕</div>
@@ -1220,8 +1227,8 @@ function renderBoards(){
   const totalPages=Math.ceil(ids.length/pageSize);
   boardPage=Math.max(0,Math.min(boardPage,totalPages-1));
   for(const name of ids.slice(boardPage*pageSize,(boardPage+1)*pageSize)){
-    const row=document.createElement('label'), checkbox=document.createElement('input'), id=document.createElement('span'), time=document.createElement('time');
-    row.className='board-row';checkbox.type='checkbox';checkbox.checked=state.checkedBoards.has(name);id.textContent=name;
+    const row=document.createElement('div'), checkbox=document.createElement('input'), id=document.createElement('span'), time=document.createElement('time');
+    row.className='board-row';checkbox.type='checkbox';checkbox.checked=state.checkedBoards.has(name);id.textContent=name||'未提供 PCB ID';
     const stamp=boardInfo.get(name).time;
     time.dateTime=new Date(stamp).toISOString();time.textContent=formatDetectionTime(stamp);time.title='检测开始时间';
     checkbox.onchange=()=>{
@@ -1229,7 +1236,26 @@ function renderBoards(){
       resetTrendZoom();state.activeGroup=null;render();
       if(state.view==='trend')scrollToActiveGroup();
     };
-    row.append(checkbox,time,id);list.append(row);
+    const select=document.createElement('label'),second=document.createElement('div'),copy=document.createElement('button');
+    select.className='board-select';second.className='board-identity';id.className='board-pcb-id';
+    select.append(checkbox,time);second.append(id);
+    row.title='检测时间：'+time.textContent+'\nPCB ID：'+(name||'未提供 PCB ID');
+    id.title=name||'未提供 PCB ID';checkbox.setAttribute('aria-label',row.title);
+    if(name){
+      copy.type='button';copy.className='board-copy';copy.textContent='复制';copy.setAttribute('aria-label','复制 PCB ID '+name);
+      copy.onclick=async()=>{
+        try{
+          if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(name);
+          else{
+            const text=document.createElement('textarea');text.value=name;text.style.position='fixed';text.style.opacity='0';document.body.append(text);text.select();
+            const ok=document.execCommand('copy');text.remove();if(!ok)throw new Error('复制失败');
+          }
+          copy.textContent='已复制';setTimeout(()=>{if(copy.isConnected)copy.textContent='复制';},1500);
+        }catch{window.prompt('请复制 PCB ID',name);}
+      };
+      second.append(copy);
+    }
+    row.append(select,second);list.append(row);
   }
   byId('board-count').textContent='共 '+ids.length.toLocaleString('zh-CN')+' 条';
   byId('boards-page').textContent=(totalPages?boardPage+1:0)+' / '+totalPages;
